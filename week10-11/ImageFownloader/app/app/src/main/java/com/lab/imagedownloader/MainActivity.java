@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -70,8 +71,11 @@ public class MainActivity extends AppCompatActivity {
                 {
                     DownloadTask backgroundTask = new DownloadTask();
                     String[] urls = new String[1];
-                    urls[0] = txtURL.getText().toString();
-                    backgroundTask.execute(urls);
+                    //urls[0] = txtURL.getText().toString();
+                    //backgroundTask.execute(urls);
+
+                    Thread thread = new Thread(new DownloadRunnable(urls[0]));
+                    thread.start();
                 }
             }
         });
@@ -94,8 +98,12 @@ public class MainActivity extends AppCompatActivity {
 
                 DownloadTask backgroundTask = new DownloadTask();
                 String[] urls = new String[1];
-                urls[0] = txtURL.getText().toString();
-                backgroundTask.execute(urls);
+                /*urls[0] = txtURL.getText().toString();
+                backgroundTask.execute(urls);*/
+
+                Thread thread = new Thread(new DownloadRunnable(urls[0]));
+                thread.start();
+
             }else {
                 Toast.makeText(this, "External storage permission not granted", Toast.LENGTH_LONG);
             }
@@ -138,12 +146,30 @@ public class MainActivity extends AppCompatActivity {
         imgView.setImageBitmap(b);
     }
     class DownloadTask extends AsyncTask<String, Integer, Bitmap>{
+
+        ProgressDialog PD;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            PD = new ProgressDialog(MainActivity.this);
+            PD.setMax(100);
+            PD.setIndeterminate(false);
+            PD.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            PD.setTitle("Downloading");
+            PD.setMessage("Please wait..");
+            PD.show();
+        }
+
+
+
+
         @Override
         protected Bitmap doInBackground(String... urls) {
             String fileName = "temp.jpg";
             File path = (Environment.getExternalStoragePublicDirectory
                     (Environment.DIRECTORY_DOWNLOADS));
             path.mkdirs();
+
             String imagePath = (Environment.getExternalStoragePublicDirectory
                     (Environment.DIRECTORY_DOWNLOADS)).toString()
                     + "/" + fileName;
@@ -164,6 +190,50 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
+            imgView.setImageBitmap(bitmap);
+        }
+    }
+
+    class DownloadRunnable implements Runnable{
+        String url;
+
+        public DownloadRunnable(String url) {
+            this.url = url;
+        }
+
+        @Override
+        public void run() {
+            String fileName = "temp.jpg";
+            String imagePath = (Environment.getExternalStoragePublicDirectory
+                    (Environment.DIRECTORY_DOWNLOADS)).toString()
+                    + "/" + fileName;
+            downloadFile(url,imagePath);
+            Bitmap bitmap = scaleBitmap(imagePath);
+            runOnUiThread(new UpdateBitmap(bitmap));
+        }
+
+        private Bitmap scaleBitmap(String imagePath) {
+            Bitmap image = BitmapFactory.decodeFile(imagePath);
+            float w = image.getWidth();
+            float h = image.getHeight();
+            int W = 400;
+            int H = (int) ( (h*W)/w);
+            Bitmap bitmap = Bitmap.createScaledBitmap(image, W, H, false);
+            return bitmap;
+        }
+    }
+
+
+    class UpdateBitmap implements Runnable{
+
+        Bitmap bitmap;
+
+        public UpdateBitmap(Bitmap bitmap) {
+            this.bitmap = bitmap;
+        }
+
+        @Override
+        public void run() {
             imgView.setImageBitmap(bitmap);
         }
     }
