@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements NoteFragment.OnNo
 
         editingNote = note;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.container, EditNoteFragment.newInstance(readContent(editingNote)));
+        ft.replace(R.id.container, EditNoteFragment.newInstance(readContent(editingNote)), "edit_note");
         ft.addToBackStack(null);
         ft.commit();
         displayingEditor = !displayingEditor;
