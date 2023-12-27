@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "927360697765",
+    "project_id": "mynotesapp-eb2f8",
+    "storage_bucket": "mynotesapp-eb2f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927360697765:android:ddaa3ae5e4499a8980544c",
+        "android_client_info": {
+          "package_name": "com.lab.mynotes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCP3ryqxXPM2FoC5W1wKILft7514IyKlmU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
